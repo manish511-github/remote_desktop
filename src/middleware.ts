@@ -5,9 +5,9 @@ const isProtectedRoute = createRouteMatcher([
     '/payment(.*)',
 ]);
 
-export default clerkMiddleware(async (auth,req)=>{
+export default clerkMiddleware( (auth,req)=>{
     if (isProtectedRoute(req)){
-        auth().protect()
+        auth.protect()
     }
 
 });

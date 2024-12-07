@@ -1,10 +1,7 @@
-import React from 'react'
 import { onAuthenticateUser } from '@/actions/user'
 import { redirect } from 'next/navigation'
 
-type Props = {}
-
-const DashboardPage = async (props: Props) => {
+const AuthCallbackPage = async () => {
     const auth = await onAuthenticateUser()
     if(auth.status === 200 || auth.status ===201){
        return redirect(`/dashboard/${auth.user?.workspace[0].id}`)
@@ -14,4 +11,4 @@ const DashboardPage = async (props: Props) => {
     }
 }
 
-export default DashboardPage
+export default AuthCallbackPage
