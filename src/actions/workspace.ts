@@ -1,3 +1,4 @@
+'use server'
 import { client } from '@/lib/prisma'
 import { currentUser } from '@clerk/nextjs/server'
 import React from 'react'
@@ -44,7 +45,7 @@ export const getWorkspaceFolders = async (workspaceId: string) => {
     try {
         const isFolders = await client.folder.findMany({
             where: {
-                workspaceId
+               id: workspaceId
             },
             include: {
                 _count: {
@@ -123,7 +124,7 @@ export const getWorkspaces = async () => {
                 },
                 members : {
                     select : {
-                        workSpace : {
+                        WorkSpace : {
                             select : {
                                 id : true,
                                 name : true,

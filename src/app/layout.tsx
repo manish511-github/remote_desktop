@@ -4,6 +4,7 @@ import {ClerkProvider} from "@clerk/nextjs";
 import "./globals.css";
 import { ThemeProvider } from "next-themes"
 import { Providers } from './providers'
+import ReactQueryProvider from "@/react-query";
 
 const manrope = Manrope({
   subsets:["latin"]
@@ -24,13 +25,17 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body className={manrope.className} suppressHydrationWarning>
           <Providers>
+            
             <ThemeProvider 
               attribute="class" 
               defaultTheme="dark" 
               enableSystem
               disableTransitionOnChange
             >
+              <ReactQueryProvider>
+
               {children}
+              </ReactQueryProvider>
             </ThemeProvider>
           </Providers>
         </body>

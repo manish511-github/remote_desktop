@@ -8,8 +8,14 @@ import {
   getWorkspaces,
   getNotifications 
 } from '@/actions/workspace'
-import { QueryClient } from '@tanstack/react-query'
-type Props = {
+import {
+    dehydrate,
+    HydrationBoundary,
+    QueryClient,
+  } from '@tanstack/react-query'
+  import Sidebar from '@/components/global/sidebar'
+
+  type Props = {
     params : {
         workspaceId : string
     }
@@ -47,8 +53,16 @@ const Layout = async ({params :{workspaceId },children }: Props) => {
         queryFn : () => getNotifications()
     })
     
-    return <div>Layout</div>
-
+    return (
+        <HydrationBoundary state={dehydrate(query)}>
+          <div className="flex h-screen w-screen">
+            <Sidebar activeWorkspaceId={workspaceId} />
+            <div className="w-full pt-28 p-6 overflow-y-scroll overflow-x-hidden">
+              <div className="mt-4">{children}</div>
+            </div>
+          </div>
+        </HydrationBoundary>
+      )
 
 
 }
