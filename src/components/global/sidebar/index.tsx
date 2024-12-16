@@ -13,12 +13,14 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useQueryData } from '@/hooks/useQueryData'
 import { getWorkspaces } from '@/actions/workspace'
+import { PlusCircle } from 'lucide-react'
+import Modal from '../modal'
+import Search from '../search'
 type Props = {
   activeWorkspaceId : string
 }
 import { useRouter } from 'next/navigation'
 import { WorkspaceProps } from '@/types/inde.type'
-
 
 const Sidebar = ({activeWorkspaceId}: Props) => {
 
@@ -53,11 +55,24 @@ const onChangeActiveWorkspace = (value : string) => {
             {workspace.workspace.map((workspace)=>(
               <SelectItem key={workspace.id} value={workspace.id}>{workspace.name}</SelectItem>
             ))}
+            {workspace.members.length>0 && workspace.members.map(workspace=> workspace.WorkSpace && (
+              <SelectItem key={workspace.WorkSpace.id} value={workspace.WorkSpace.id}>{workspace.WorkSpace.name}</SelectItem>
+            ))}
         </SelectGroup>
         </SelectContent>
 
         
       </Select>
+     <Modal trigger={
+      <span className='text-sm cursor-pointer flex items-center justify-center bg-neutral-800/90 hover:bg-neutral-800/60 w-full rounded-sm p-[5px] gap-2'>
+        <PlusCircle size={15} className='text-neutral-800/90 fill-neutral-500' ></PlusCircle>
+        <span className='text-neutral-400 font-semibold text-xs'>Invite to Workspace</span>
+      </span>
+     }  title="Invite To Workspace"
+     description="Invite other users to your workspace">
+       <Search workspaceId={activeWorkspaceId} />
+
+     </Modal>
       
     </div>
   )
