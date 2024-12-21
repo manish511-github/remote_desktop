@@ -109,3 +109,67 @@ export const searchUsers = async (query: string) => {
     return { status: 500, data: undefined }
   }
 }
+
+export const inviteMembers = async (
+  workspaceId: string,
+  recieverId: string,
+  email: string
+) => {
+  try {
+    const user = await currentUser()
+    if (!user) return { status: 404 }
+    const senderInfo = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+      },
+    })
+    if (senderInfo?.id) {
+      const workspace = await client.workSpace.findUnique({
+        where: {
+          id: workspaceId,
+        },
+        select: {
+          name: true,
+        },
+      })
+      if (workspace) {
+        const invitation = await client.invite.create({
+          data: {
+            senderId: senderInfo.id,
+            recieverId,
+            workSpaceId: workspaceId,
+            content: `You are invited to join ${workspace.name} Workspace, click accept to confirm`,
+          },
+          select: {
+            id: true,
+          },
+        })
+
+        await client.user.update({
+          where: {
+            clerkid: user.id,
+          },
+          data: {
+            notification: {
+              create: {
+                content: `${user.firstName} ${user.lastName} invited ${senderInfo.firstname} into ${workspace.name}`,
+              },
+            },
+          },
+        })
+
+        return { status: 400, data: 'invitation failed' }
+      }
+      return { status: 404, data: 'workspace not found' }
+    }
+    return { status: 404, data: 'recipient not found' }
+  } catch (error) {
+    console.log(error)
+    return { status: 400, data: 'Oops! something went wrong' }
+  }
+}
