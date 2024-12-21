@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+
 import { useQueryData } from '@/hooks/useQueryData'
 import { getWorkspaces } from '@/actions/workspace'
 import { PlusCircle } from 'lucide-react'
@@ -19,19 +20,26 @@ import Search from '../search'
 type Props = {
   activeWorkspaceId : string
 }
-import { useRouter } from 'next/navigation'
-import { WorkspaceProps } from '@/types/inde.type'
+import { usePathname,useRouter } from 'next/navigation'
+import { NotificationProps,WorkspaceProps } from '@/types/inde.type'
 import { MENU_ITEMS } from '@/constants'
+import SidebarItem from './sidebar-item'
 
 const Sidebar = ({activeWorkspaceId}: Props) => {
+const pathName = usePathname()
 
 const router = useRouter()
 const {data ,isFetched} = useQueryData(['user-workspaces'],getWorkspaces)
 const menuItems =MENU_ITEMS(activeWorkspaceId)
 const {data : workspace} = data as WorkspaceProps
+const { data: count } = notifications as NotificationProps
+
 const onChangeActiveWorkspace = (value : string) => {
   router.push(`/dashboard/${value}`)
 }
+const currentWorkspace = workspace.workspace.find(
+  (s) => s.id === activeWorkspaceId
+)
 
 
   return (
@@ -65,6 +73,8 @@ const onChangeActiveWorkspace = (value : string) => {
 
         
       </Select>
+      {currentWorkspace?.type === 'PUBLIC' &&
+        workspace.subscription?.plan == 'PRO' && (
      <Modal trigger={
       <span className='text-sm cursor-pointer flex items-center justify-center bg-neutral-800/90 hover:bg-neutral-800/60 w-full rounded-sm p-[5px] gap-2'>
         <PlusCircle size={15} className='text-neutral-800/90 fill-neutral-500' ></PlusCircle>
@@ -75,7 +85,27 @@ const onChangeActiveWorkspace = (value : string) => {
        <Search workspaceId={activeWorkspaceId} />
 
      </Modal>
-      
+              )}
+    <p className='w-full text-[#9D9D9D] font-bold mt-4'>Menu</p>
+    <nav className='w-full'>
+      <ul>
+      {menuItems.map((item) => (
+            <SidebarItem
+              href={item.href}
+              icon={item.icon}
+              selected={pathName === item.href}
+              title={item.title}
+              key={item.title}
+              notifications={
+                (item.title === 'Notifications' &&
+                  count._count &&
+                  count._count.notification) ||
+                0
+              }
+            />
+          ))}
+      </ul>
+    </nav>
     </div>
   )
 }
