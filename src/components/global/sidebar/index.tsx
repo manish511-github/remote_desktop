@@ -21,11 +21,13 @@ type Props = {
 }
 import { useRouter } from 'next/navigation'
 import { WorkspaceProps } from '@/types/inde.type'
+import { MENU_ITEMS } from '@/constants'
 
 const Sidebar = ({activeWorkspaceId}: Props) => {
 
 const router = useRouter()
 const {data ,isFetched} = useQueryData(['user-workspaces'],getWorkspaces)
+const menuItems =MENU_ITEMS(activeWorkspaceId)
 const {data : workspace} = data as WorkspaceProps
 const onChangeActiveWorkspace = (value : string) => {
   router.push(`/dashboard/${value}`)
